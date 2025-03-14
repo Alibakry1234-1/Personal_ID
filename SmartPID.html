@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة إنشاء بطاقة معلومات التواصل الشخصية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#7A79FF',
+                        hilal: '#0051a3',
+                        nassr: '#ffca07',
+                        ittihad: '#000000',
+                        ahli: '#00a651'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+
+        body { font-family: 'Tajawal', sans-serif; transition: all 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fadeIn { animation: fadeIn 0.5s ease forwards; }
+        .card-item { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        .card-item:nth-child(1) { animation-delay: 0.1s; }
+        .card-item:nth-child(2) { animation-delay: 0.2s; }
+        .card-item:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes spinner { to { transform: rotate(360deg); } }
+        .spinner:before {
+            content: ''; box-sizing: border-box; position: absolute; top: 50%; left: 50%;
+            width: 30px; height: 30px; margin-top: -15px; margin-left: -15px;
+            border-radius: 50%; border: 3px solid #ccc; border-top-color: #5D5CDE;
+            animation: spinner .6s linear infinite;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(93, 92, 222, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(93, 92, 222, 0.7); }
+        .stat-card { transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; }
+        .stat-card::before {
+            content: ''; position: absolute; top: -10px; right: -10px;
+            width: 40px; height: 40px; border-radius: 50%; background-color: rgba(93, 92, 222, 0.2); z-index: -1;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
+        .contact-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            dark:background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .contact-card::before {
+            content: ''; position: absolute; top: -20px; right: -20px;
+            width: 60px; height: 60px; border-radius: 50%; background: rgba(93, 92, 222, 0.1);
+            z-index: -1;
+        }
+        .contact-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+        .icon { width: 24px; height: 24px; vertical-align: middle; margin-left: 8px; }
+        @media print {
+            body { background-color: white; font-size: 92%; }
+            .contact-card { break-inside: avoid; }
+            .print-hidden { display: none !important; }
+            .contact-card:hover { transform: none; box-shadow: none; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 p-4 font-tajawal">
+    <div class="max-w-4xl mx-auto print-container bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-all duration-300">
+        <!-- Logo and Header -->
+        <div class="flex items-center justify-center mb-6 print-hidden">
+            <div class="logo mr-4">
+                <div class="relative w-14 h-14">
+                    <div class="logo-circle absolute inset-0 border-4 border-primary rounded-full opacity-25"></div>
+                    <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl text-primary">ID</div>
+                </div>
+            </div>
+            <div class="animate-fadeIn">
+                <h1 class="text-3xl md:text-4xl font-bold text-center bg-gradient-to-l from-primary to-secondary inline-block text-transparent bg-clip-text">أداة إنشاء بطاقة معلومات التواصل الشخصية</h1>
+                <p class="text-center text-gray-500 dark:text-gray-400 mt-2">إنشاء بطاقة احترافية لمعلومات التواصل الخاصة بك</p>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="hidden mb-6 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-lg text-center"></div>
+
+        <div id="formContainer" class="max-w-2xl mx-auto space-y-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-xl shadow-sm">
+            <div>
+                <label for="name" class="block mb-2 font-medium text-lg">اسمك</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/user.png" alt="User Icon" class="icon mr-2">
+                    <input type="text" id="name" placeholder="أدخل اسمك الكامل" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                </div>
+            </div>
+            <div>
+                <label for="hijriDate" class="block mb-2 font-medium text-lg">تاريخ ميلادك الهجري</label>
+                <div class="flex flex-wrap md:flex-nowrap gap-2">
+                    <select id="hijriDay" class="flex-1 p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                        <option value="">اليوم</option>
+                    </select>
+                    <select id="hijriMonth" class="flex-1 p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                        <option value="">الشهر</option>
+                        <option value="1">محرّم</option>
+                        <option value="2">صفر</option>
+                        <option value="3">ربيع الأول</option>
+                        <option value="4">ربيع الثاني</option>
+                        <option value="5">جمادى الأولى</option>
+                        <option value="6">جمادى الآخرة</option>
+                        <option value="7">رجب</option>
+                        <option value="8">شعبان</option>
+                        <option value="9">رمضان</option>
+                        <option value="10">شوال</option>
+                        <option value="11">ذو القعدة</option>
+                        <option value="12">ذو الحجة</option>
+                    </select>
+                    <select id="hijriYear" class="flex-1 p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                        <option value="">السنة</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label for="job" class="block mb-2 font-medium text-lg">وظيفتك</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/briefcase.png" alt="Job Icon" class="icon mr-2">
+                    <input type="text" id="job" placeholder="أدخل وظيفتك" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                </div>
+            </div>
+            <div>
+                <label for="city" class="block mb-2 font-medium text-lg">مدينتك</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/city.png" alt="City Icon" class="icon mr-2">
+                    <input type="text" id="city" placeholder="أدخل مدينتك" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                </div>
+            </div>
+            <div>
+                <label for="phone" class="block mb-2 font-medium text-lg">رقم جوالك</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/phone.png" alt="Phone Icon" class="icon mr-2">
+                    <input type="tel" id="phone" placeholder="أدخل رقم جوالك" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                </div>
+            </div>
+            <div>
+                <label for="officePhone" class="block mb-2 font-medium text-lg">رقم المكتب</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/office.png" alt="Office Icon" class="icon mr-2">
+                    <input type="tel" id="officePhone" placeholder="أدخل رقم المكتب" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary" required>
+                </div>
+            </div>
+            <div>
+                <label for="linkedin" class="block mb-2 font-medium text-lg">LinkedIn</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/linkedin.png" alt="LinkedIn Logo" class="icon mr-2">
+                    <input type="url" id="linkedin" placeholder="رابط LinkedIn" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+            <div>
+                <label for="twitter" class="block mb-2 font-medium text-lg">Twitter</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/twitter.png" alt="Twitter Logo" class="icon mr-2">
+                    <input type="url" id="twitter" placeholder="رابط Twitter" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+            <div>
+                <label for="instagram" class="block mb-2 font-medium text-lg">Instagram</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/instagram.png" alt="Instagram Logo" class="icon mr-2">
+                    <input type="url" id="instagram" placeholder="رابط Instagram" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+            <div>
+                <label for="snapchat" class="block mb-2 font-medium text-lg">Snapchat</label>
+                <div class="flex items-center">
+                    <img src="https://img.icons8.com/ios-filled/24/5D5CDE/snapchat.png" alt="Snapchat Logo" class="icon mr-2">
+                    <input type="url" id="snapchat" placeholder="رابط Snapchat" 
+                        class="w-full p-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary">
+                </div>
+            </div>
+            <button id="generateBtn" class="w-full bg-gradient-to-l from-primary to-secondary hover:opacity-90 text-white font-medium py-3 px-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                إنشاء بطاقات التواصل
+            </button>
+        </div>
+
+        <div id="infoContainer" class="hidden">
+            <div id="loadingState" class="relative h-40">
+                <div class="spinner"></div>
+            </div>
+            <div id="dashboard" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card 1: Arabic with Hijri Date -->
+                <div class="contact-card card-item">
+                    <h2 class="text-2xl font-bold text-primary mb-4">بطاقة معلومات التواصل الشخصية</h2>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">الاسم:</span> <span id="card1Name"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">تاريخ الميلاد الهجري:</span> <span id="card1HijriDate"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">الوظيفة:</span> <span id="card1Job"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">المدينة:</span> <span id="card1City"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">رقم الجوال:</span> <span id="card1Phone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">رقم المكتب:</span> <span id="card1OfficePhone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">LinkedIn:</span> <span id="card1LinkedIn"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Twitter:</span> <span id="card1Twitter"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Instagram:</span> <span id="card1Instagram"></span></p>
+                    <p class="text-lg font-medium mb-4"><span class="text-primary">Snapchat:</span> <span id="card1Snapchat"></span></p>
+                    <button id="saveCard1" class="bg-primary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 print-hidden">
+                        حفظ كصورة
+                    </button>
+                    <p class="text-[8px] text-gray-500 dark:text-gray-400 mt-2 text-center">جميع الحقوق محفوظة © <span id="currentYear"></span></p>
+                </div>
+
+                <!-- Card 2: English with Hijri Date -->
+                <div class="contact-card card-item" dir="ltr">
+                    <h2 class="text-2xl font-bold text-primary mb-4">Personal Contact Information Card</h2>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Name:</span> <span id="card2Name"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Hijri Birth Date:</span> <span id="card2HijriDate"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Job:</span> <span id="card2Job"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">City:</span> <span id="card2City"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Phone:</span> <span id="card2Phone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Office Phone:</span> <span id="card2OfficePhone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">LinkedIn:</span> <span id="card2LinkedIn"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Twitter:</span> <span id="card2Twitter"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Instagram:</span> <span id="card2Instagram"></span></p>
+                    <p class="text-lg font-medium mb-4"><span class="text-primary">Snapchat:</span> <span id="card2Snapchat"></span></p>
+                    <button id="saveCard2" class="bg-primary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 print-hidden">
+                        Save as Image
+                    </button>
+                    <p class="text-[8px] text-gray-500 dark:text-gray-400 mt-2 text-center">All rights reserved © <span id="currentYear"></span></p>
+                </div>
+
+                <!-- Card 3: English with Gregorian Date -->
+                <div class="contact-card card-item" dir="ltr">
+                    <h2 class="text-2xl font-bold text-primary mb-4">Personal Contact Information Card</h2>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Name:</span> <span id="card3Name"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Gregorian Birth Date:</span> <span id="card3GregorianDate"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Job:</span> <span id="card3Job"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">City:</span> <span id="card3City"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Phone:</span> <span id="card3Phone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Office Phone:</span> <span id="card3OfficePhone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">LinkedIn:</span> <span id="card3LinkedIn"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Twitter:</span> <span id="card3Twitter"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Instagram:</span> <span id="card3Instagram"></span></p>
+                    <p class="text-lg font-medium mb-4"><span class="text-primary">Snapchat:</span> <span id="card3Snapchat"></span></p>
+                    <button id="saveCard3" class="bg-primary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 print-hidden">
+                        Save as Image
+                    </button>
+                    <p class="text-[8px] text-gray-500 dark:text-gray-400 mt-2 text-center">All rights reserved © <span id="currentYear"></span></p>
+                </div>
+
+                <!-- Card 4: Arabic with Gregorian Date -->
+                <div class="contact-card card-item">
+                    <h2 class="text-2xl font-bold text-primary mb-4">بطاقة معلومات التواصل الشخصية</h2>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">الاسم:</span> <span id="card4Name"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">تاريخ الميلاد الميلادي:</span> <span id="card4GregorianDate"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">الوظيفة:</span> <span id="card4Job"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">المدينة:</span> <span id="card4City"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">رقم الجوال:</span> <span id="card4Phone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">رقم المكتب:</span> <span id="card4OfficePhone"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">LinkedIn:</span> <span id="card4LinkedIn"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Twitter:</span> <span id="card4Twitter"></span></p>
+                    <p class="text-lg font-medium mb-2"><span class="text-primary">Instagram:</span> <span id="card4Instagram"></span></p>
+                    <p class="text-lg font-medium mb-4"><span class="text-primary">Snapchat:</span> <span id="card4Snapchat"></span></p>
+                    <button id="saveCard4" class="bg-primary hover:bg-opacity-90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 print-hidden">
+                        حفظ كصورة
+                    </button>
+                    <p class="text-[8px] text-gray-500 dark:text-gray-400 mt-2 text-center">جميع الحقوق محفوظة © <span id="currentYear"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400 text-sm">
+            <p>جميع الحقوق محفوظة © <span id="currentYear"></span></p>
+            <p class="mt-1">تم التطوير بواسطة <span class="font-bold text-primary">علي عبدالله بكري</span></p>
+        </footer>
+    </div>
+
+    <script>
+        let userData = null;
+        const currentDate = new Date('2025-03-11');
+        const html2canvas = window.html2canvas; // Assuming html2canvas is included via CDN
+
+        function initDarkMode() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+        }
+
+        function toggleDarkMode() {
+            const isDarkMode = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function populateDateSelects() {
+            const hijriDaySelect = document.getElementById("hijriDay");
+            const hijriYearSelect = document.getElementById("hijriYear");
+
+            for (let i = 1; i <= 30; i++) {
+                const option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                hijriDaySelect.appendChild(option);
+            }
+
+            const currentHijriYear = Math.floor((currentDate.getFullYear() - 622) * (33 / 32));
+            const startHijriYear = currentHijriYear - 80;
+
+            for (let i = currentHijriYear; i >= startHijriYear; i--) {
+                const option = document.createElement("option");
+                option.value = i;
+                option.textContent = i;
+                hijriYearSelect.appendChild(option);
+            }
+        }
+
+        function hijriToGregorian(hijriYear, hijriMonth, hijriDay) {
+            const jd = Math.floor((11 * hijriYear + 3) / 30) + 354 * hijriYear + 30 * hijriMonth - Math.floor((hijriMonth - 1) / 2) + hijriDay + 1948440 - 385;
+            const date = new Date((jd - 2440588) * 86400000);
+            return date.toLocaleDateString('en-GB'); // e.g., "11/03/2025"
+        }
+
+        function displayUserInfo() {
+            if (!userData) return;
+
+            document.getElementById("formContainer").classList.add("hidden");
+            document.getElementById("infoContainer").classList.remove("hidden");
+            document.getElementById("loadingState").classList.remove("hidden");
+            document.getElementById("dashboard").classList.add("hidden");
+
+            const { name, hijriDate, job, city, phone, officePhone, linkedin, twitter, instagram, snapchat } = userData;
+            const [hijriDay, hijriMonth, hijriYear] = hijriDate.split('-').map(Number);
+            const gregorianDate = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
+
+            // Update all cards
+            const updateCard = (idPrefix, lang) => {
+                document.getElementById(`${idPrefix}Name`).textContent = name;
+                document.getElementById(`${idPrefix}HijriDate`).textContent = lang === 'ar' ? `${hijriDay}/${hijriMonth}/${hijriYear} هـ` : `${hijriDay}/${hijriMonth}/${hijriYear} AH`;
+                document.getElementById(`${idPrefix}GregorianDate`).textContent = lang === 'ar' ? gregorianDate : gregorianDate;
+                document.getElementById(`${idPrefix}Job`).textContent = job;
+                document.getElementById(`${idPrefix}City`).textContent = city;
+                document.getElementById(`${idPrefix}Phone`).textContent = phone;
+                document.getElementById(`${idPrefix}OfficePhone`).textContent = officePhone;
+                document.getElementById(`${idPrefix}LinkedIn`).textContent = linkedin || 'غير محدد';
+                document.getElementById(`${idPrefix}Twitter`).textContent = twitter || 'غير محدد';
+                document.getElementById(`${idPrefix}Instagram`).textContent = instagram || 'غير محدد';
+                document.getElementById(`${idPrefix}Snapchat`).textContent = snapchat || 'غير محدد';
+            };
+
+            updateCard('card1', 'ar'); // Arabic Hijri
+            updateCard('card2', 'en'); // English Hijri
+            updateCard('card3', 'en'); // English Gregorian
+            updateCard('card4', 'ar'); // Arabic Gregorian
+
+            setTimeout(() => {
+                document.getElementById("loadingState").classList.add("hidden");
+                document.getElementById("dashboard").classList.remove("hidden");
+
+                // Add save functionality
+                ['saveCard1', 'saveCard2', 'saveCard3', 'saveCard4'].forEach(id => {
+                    document.getElementById(id).addEventListener('click', () => {
+                        html2canvas(document.getElementById(id.replace('save', 'card'))).then(canvas => {
+                            const link = document.createElement('a');
+                            link.download = `contact_card_${id.replace('saveCard', '')}.png`;
+                            link.href = canvas.toDataURL();
+                            link.click();
+                        });
+                    });
+                });
+            }, 800);
+        }
+
+        function initApp() {
+            document.getElementById("currentYear").textContent = currentDate.getFullYear();
+            populateDateSelects();
+            initDarkMode();
+
+            document.getElementById("generateBtn").addEventListener("click", function(e) {
+                e.preventDefault();
+
+                const name = document.getElementById("name").value;
+                const hijriDay = document.getElementById("hijriDay").value;
+                const hijriMonth = document.getElementById("hijriMonth").value;
+                const hijriYear = document.getElementById("hijriYear").value;
+                const job = document.getElementById("job").value;
+                const city = document.getElementById("city").value;
+                const phone = document.getElementById("phone").value;
+                const officePhone = document.getElementById("officePhone").value;
+                const linkedin = document.getElementById("linkedin").value;
+                const twitter = document.getElementById("twitter").value;
+                const instagram = document.getElementById("instagram").value;
+                const snapchat = document.getElementById("snapchat").value;
+
+                if (!name || !hijriDay || !hijriMonth || !hijriYear || !job || !city || !phone || !officePhone) {
+                    showError("يرجى ملء جميع الحقول الإلزامية");
+                    return;
+                }
+
+                userData = { name, hijriDate: `${hijriDay}-${hijriMonth}-${hijriYear}`, job, city, phone, officePhone, linkedin, twitter, instagram, snapchat };
+                displayUserInfo();
+            });
+
+            document.getElementById("resetBtn").addEventListener("click", () => {
+                userData = null;
+                document.getElementById("name").value = "";
+                document.getElementById("hijriDay").value = "";
+                document.getElementById("hijriMonth").value = "";
+                document.getElementById("hijriYear").value = "";
+                document.getElementById("job").value = "";
+                document.getElementById("city").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("officePhone").value = "";
+                document.getElementById("linkedin").value = "";
+                document.getElementById("twitter").value = "";
+                document.getElementById("instagram").value = "";
+                document.getElementById("snapchat").value = "";
+                document.getElementById("formContainer").classList.remove("hidden");
+                document.getElementById("infoContainer").classList.add("hidden");
+            });
+
+            document.getElementById("darkModeBtn").addEventListener("click", toggleDarkMode);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById("errorMessage");
+            errorDiv.textContent = message;
+            errorDiv.classList.remove("hidden");
+            setTimeout(() => errorDiv.classList.add("hidden"), 3000);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
