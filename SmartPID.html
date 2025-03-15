@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ البطاقات الاحترافية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #5D5CDE;
+            --text-color: #333333;
+            --bg-color: #FFFFFF;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --input-bg: #F5F5F5;
+            --input-text: #333333;
+            --input-border: #CCCCCC;
+            --input-placeholder: #6B7280;
+        }
+        
+        .dark {
+            --text-color: #E1E1E1;
+            --bg-color: #181818;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --input-bg: #2A2A2A;
+            --input-text: #E1E1E1;
+            --input-border: #555555;
+            --input-placeholder: #9CA3AF;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
+        }
+        
+        .poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .card-preview {
+            width: 500px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        input, textarea, select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: var(--input-placeholder);
+        }
+        
+        .download-btn {
+            background-color: var(--primary-color);
+        }
+        
+        .card-container {
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .card-preview {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 5/3;
+            }
+        }
+        
+        /* For better readability */
+        .high-contrast-dark {
+            color: #000000 !important;
+        }
+        
+        .high-contrast-light {
+            color: #FFFFFF !important;
+        }
+        
+        .dark .card-content {
+            background-color: rgba(32, 32, 32, 0.95) !important;
+        }
+        
+        .dark .social-icon {
+            color: #FFFFFF !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white" id="pageTitle">منشئ البطاقات الاحترافية</h1>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Input Form -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">أدخل معلوماتك</h2>
+                
+                <form id="cardForm" class="space-y-4">
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">الاسم الكامل (بالعربية)</label>
+                        <input type="text" id="nameAr" class="w-full px-4 py-2 rounded-md text-base" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">الاسم الكامل (بالإنجليزية)</label>
+                        <input type="text" id="nameEn" class="w-full px-4 py-2 rounded-md text-base poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">المسمى الوظيفي (بالعربية)</label>
+                        <input type="text" id="titleAr" class="w-full px-4 py-2 rounded-md text-base">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">المسمى الوظيفي (بالإنجليزية)</label>
+                        <input type="text" id="titleEn" class="w-full px-4 py-2 rounded-md text-base poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">معلومات الاتصال</label>
+                        <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full px-4 py-2 rounded-md text-base mb-2">
+                        <input type="tel" id="phone" placeholder="رقم الهاتف" class="w-full px-4 py-2 rounded-md text-base">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">وسائل التواصل الاجتماعي</label>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-facebook text-blue-600 dark:text-blue-400"></i>
+                            </span>
+                            <input type="text" id="facebook" placeholder="اسم المستخدم على فيسبوك" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-pink-100 dark:bg-pink-900 p-2 rounded-r-md">
+                                <i class="fab fa-instagram text-pink-600 dark:text-pink-400"></i>
+                            </span>
+                            <input type="text" id="instagram" placeholder="اسم المستخدم على انستغرام" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-twitter text-blue-500 dark:text-blue-300"></i>
+                            </span>
+                            <input type="text" id="twitter" placeholder="اسم المستخدم على تويتر" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-linkedin text-blue-700 dark:text-blue-500"></i>
+                            </span>
+                            <input type="text" id="linkedin" placeholder="اسم المستخدم على لينكد إن" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-green-100 dark:bg-green-900 p-2 rounded-r-md">
+                                <i class="fab fa-whatsapp text-green-600 dark:text-green-400"></i>
+                            </span>
+                            <input type="text" id="whatsapp" placeholder="رقم الواتساب (مع رمز الدولة)" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-yellow-100 dark:bg-yellow-900 p-2 rounded-r-md">
+                                <i class="fab fa-snapchat text-yellow-500 dark:text-yellow-300"></i>
+                            </span>
+                            <input type="text" id="snapchat" placeholder="اسم المستخدم على سناب شات" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="bg-gray-100 dark:bg-gray-700 p-2 rounded-r-md">
+                                <i class="fab fa-tiktok text-black dark:text-white"></i>
+                            </span>
+                            <input type="text" id="tiktok" placeholder="اسم المستخدم على تيك توك" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">تصميم البطاقة</label>
+                        <select id="cardDesign" class="w-full px-4 py-2 rounded-md text-base">
+                            <option value="geometric">هندسي</option>
+                            <option value="gradient">تدرج لوني</option>
+                            <option value="minimal">بسيط</option>
+                            <option value="professional">احترافي</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">سمة الألوان</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <div class="color-option w-8 h-8 rounded-full bg-blue-600 cursor-pointer border-2 border-transparent" data-color="#2563EB"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-purple-600 cursor-pointer border-2 border-transparent" data-color="#9333EA"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-green-600 cursor-pointer border-2 border-transparent" data-color="#16A34A"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-red-600 cursor-pointer border-2 border-transparent" data-color="#DC2626"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-yellow-500 cursor-pointer border-2 border-transparent" data-color="#EAB308"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-indigo-800 cursor-pointer border-2 border-transparent" data-color="#3730A3"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-rose-600 cursor-pointer border-2 border-transparent" data-color="#E11D48"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-emerald-600 cursor-pointer border-2 border-transparent" data-color="#059669"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-amber-600 cursor-pointer border-2 border-transparent" data-color="#D97706"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-teal-600 cursor-pointer border-2 border-transparent" data-color="#0D9488"></div>
+                        </div>
+                        <input type="hidden" id="colorTheme" value="#5D5CDE">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">وضوح الألوان للقراءة</label>
+                        <select id="contrastMode" class="w-full px-4 py-2 rounded-md text-base">
+                            <option value="normal">عادي</option>
+                            <option value="high-dark">تباين عالي (نص أسود)</option>
+                            <option value="high-light">تباين عالي (نص أبيض)</option>
+                        </select>
+                    </div>
+                                        
+                    <button type="submit" id="generateBtn" class="w-full bg-primary text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                        إنشاء البطاقات
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Card Preview -->
+            <div class="space-y-8">
+                <div id="previewSection" class="hidden">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">بطاقاتك</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="mb-2 text-gray-800 dark:text-gray-200">البطاقة العربية</h3>
+                            <div id="cardPreviewAr" class="card-preview rounded-lg mx-auto bg-white dark:bg-gray-700"></div>
+                            <div class="mt-4 text-center">
+                                <button id="downloadArBtn" class="bg-primary text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                                    <span>تحميل البطاقة العربية</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="mb-2 text-gray-800 dark:text-gray-200">البطاقة الإنجليزية</h3>
+                            <div id="cardPreviewEn" class="card-preview rounded-lg mx-auto bg-white dark:bg-gray-700"></div>
+                            <div class="mt-4 text-center">
+                                <button id="downloadEnBtn" class="bg-primary text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                                    <span>تحميل البطاقة الإنجليزية</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="instructionsSection">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">كيفية الاستخدام</h3>
+                        <ol class="list-decimal pr-5 space-y-2 text-gray-800 dark:text-gray-200">
+                            <li>املأ معلوماتك الشخصية والمهنية</li>
+                            <li>اختر التصميم المفضل وسمة الألوان</li>
+                            <li>انقر على "إنشاء البطاقات" لإنشاء بطاقاتك الشخصية</li>
+                            <li>قم بتحميل نسختي البطاقة باللغتين العربية والإنجليزية</li>
+                        </ol>
+                        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-md">
+                            <p class="text-sm text-gray-700 dark:text-gray-300">يتم إنشاء البطاقات كصور عالية الجودة يمكنك مشاركتها بسهولة على صفحة GitHub الخاصة بك أو استخدامها للأغراض المهنية.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden card containers for rendering -->
+    <div id="cardContainerEn" class="card-container"></div>
+    <div id="cardContainerAr" class="card-container"></div>
+    
+    <script>
+        // Dark mode detection and handling
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+        
+        // Form submission and card generation
+        document.getElementById('cardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateCards();
+        });
+        
+        // Color theme selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.remove('border-white', 'border-gray-800');
+                    opt.classList.add('border-transparent');
+                });
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    this.classList.remove('border-transparent');
+                    this.classList.add('border-white');
+                } else {
+                    this.classList.remove('border-transparent');
+                    this.classList.add('border-gray-800');
+                }
+                
+                document.getElementById('colorTheme').value = this.getAttribute('data-color');
+            });
+        });
+        
+        // Set default color on page load
+        function setDefaultColorOption() {
+            const defaultColor = document.querySelector('.color-option[data-color="#5D5CDE"]') || 
+                               document.querySelector('.color-option:first-child');
+            
+            if (document.documentElement.classList.contains('dark')) {
+                defaultColor.classList.remove('border-transparent');
+                defaultColor.classList.add('border-white');
+            } else {
+                defaultColor.classList.remove('border-transparent');
+                defaultColor.classList.add('border-gray-800');
+            }
+            
+            document.getElementById('colorTheme').value = defaultColor.getAttribute('data-color');
+        }
+        
+        // Call on page load
+        setDefaultColorOption();
+        
+        // Generate and display cards
+        function generateCards() {
+            // Show loading state
+            const generateBtn = document.getElementById('generateBtn');
+            const originalBtnText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<span class="loading"></span> جاري الإنشاء...';
+            generateBtn.disabled = true;
+            
+            setTimeout(() => {
+                // Get form values
+                const nameEn = document.getElementById('nameEn').value;
+                const nameAr = document.getElementById('nameAr').value;
+                const titleEn = document.getElementById('titleEn').value;
+                const titleAr = document.getElementById('titleAr').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const facebook = document.getElementById('facebook').value;
+                const instagram = document.getElementById('instagram').value;
+                const twitter = document.getElementById('twitter').value;
+                const linkedin = document.getElementById('linkedin').value;
+                const whatsapp = document.getElementById('whatsapp').value;
+                const snapchat = document.getElementById('snapchat').value;
+                const tiktok = document.getElementById('tiktok').value;
+                const design = document.getElementById('cardDesign').value;
+                const color = document.getElementById('colorTheme').value;
+                const contrastMode = document.getElementById('contrastMode').value;
+                
+                // Generate the cards
+                createArabicCard(nameAr, titleAr, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode);
+                createEnglishCard(nameEn || nameAr, titleEn || titleAr, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode);
+                
+                // Show preview section, hide instructions
+                document.getElementById('previewSection').classList.remove('hidden');
+                document.getElementById('instructionsSection').classList.add('hidden');
+                
+                // Reset button state
+                generateBtn.innerHTML = originalBtnText;
+                generateBtn.disabled = false;
+            }, 1000); // Simulate processing time
+        }
+        
+        // Create English card
+        function createEnglishCard(name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode) {
+            const container = document.getElementById('cardContainerEn');
+            const preview = document.getElementById('cardPreviewEn');
+            
+            container.innerHTML = getCardHTML(name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode, false);
+            
+            // Convert to image and display in preview
+            html2canvas(container.firstChild, {
+                backgroundColor: null,
+                scale: 2,
+                logging: false,
+                allowTaint: true,
+                useCORS: true
+            }).then(canvas => {
+                preview.innerHTML = '';
+                preview.appendChild(canvas);
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+            });
+        }
+        
+        // Create Arabic card
+        function createArabicCard(name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode) {
+            const container = document.getElementById('cardContainerAr');
+            const preview = document.getElementById('cardPreviewAr');
+            
+            container.innerHTML = getCardHTML(name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode, true);
+            
+            // Convert to image and display in preview
+            html2canvas(container.firstChild, {
+                backgroundColor: null,
+                scale: 2,
+                logging: false,
+                allowTaint: true,
+                useCORS: true
+            }).then(canvas => {
+                preview.innerHTML = '';
+                preview.appendChild(canvas);
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+            });
+        }
+        
+        // Download card as image
+        document.getElementById('downloadEnBtn').addEventListener('click', function() {
+            downloadCard('cardPreviewEn', 'english-card.png');
+        });
+        
+        document.getElementById('downloadArBtn').addEventListener('click', function() {
+            downloadCard('cardPreviewAr', 'arabic-card.png');
+        });
+        
+        function downloadCard(previewId, filename) {
+            const canvas = document.getElementById(previewId).querySelector('canvas');
+            
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        // Generate card HTML based on design and direction
+        function getCardHTML(name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode, isArabic) {
+            const direction = isArabic ? 'rtl' : 'ltr';
+            const fontClass = isArabic ? '' : 'poppins';
+            const contactItems = [];
+            
+            if (email) contactItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fas fa-envelope text-sm ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : ''}"></i>
+                <span>${email}</span>
+            </div>`);
+            
+            if (phone) contactItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fas fa-phone text-sm ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : ''}"></i>
+                <span>${phone}</span>
+            </div>`);
+            
+            const socialItems = [];
+            
+            if (facebook) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-facebook social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-blue-600 dark:text-blue-400'}"></i>
+                <span>facebook.com/${facebook}</span>
+            </div>`);
+            
+            if (instagram) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-instagram social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-pink-600 dark:text-pink-400'}"></i>
+                <span>instagram.com/${instagram}</span>
+            </div>`);
+            
+            if (twitter) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-twitter social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-blue-500 dark:text-blue-300'}"></i>
+                <span>twitter.com/${twitter}</span>
+            </div>`);
+            
+            if (linkedin) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-linkedin social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-blue-700 dark:text-blue-500'}"></i>
+                <span>linkedin.com/in/${linkedin}</span>
+            </div>`);
+            
+            if (whatsapp) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-whatsapp social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-green-600 dark:text-green-400'}"></i>
+                <span>wa.me/${whatsapp}</span>
+            </div>`);
+            
+            if (snapchat) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-snapchat social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : 'text-yellow-500 dark:text-yellow-300'}"></i>
+                <span>snapchat.com/add/${snapchat}</span>
+            </div>`);
+            
+            if (tiktok) socialItems.push(`<div class="flex ${isArabic ? 'justify-end' : ''} items-center gap-2 mb-1">
+                <i class="fab fa-tiktok social-icon ${contrastMode !== 'normal' ? (contrastMode === 'high-dark' ? 'text-black' : 'text-white') : ''}"></i>
+                <span>tiktok.com/@${tiktok}</span>
+            </div>`);
+            
+            let backgroundStyle = '';
+            let contentClass = '';
+            let textClass = '';
+            
+            // Handle contrast mode for better readability
+            if (contrastMode === 'high-dark') {
+                textClass = 'high-contrast-dark';
+            } else if (contrastMode === 'high-light') {
+                textClass = 'high-contrast-light';
+            }
+            
+            // Design variations
+            switch(design) {
+                case 'geometric':
+                    backgroundStyle = `
+                        background-color: white;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='%23${color.replace('#', '')}' fill-opacity='0.1' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'%3E%3C/path%3E%3C/svg%3E");
+                    `;
+                    contentClass = 'bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 shadow-lg rounded-lg p-6 card-content';
+                    break;
+                case 'gradient':
+                    backgroundStyle = `background: linear-gradient(135deg, ${color} 0%, ${shiftColor(color, 40)} 100%);`;
+                    contentClass = 'bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 shadow-lg rounded-lg p-6 card-content';
+                    break;
+                case 'minimal':
+                    backgroundStyle = `background-color: white;`;
+                    contentClass = 'border-r-4 dark:border-r-4 p-6 card-content';
+                    contentClass += ` border-[${color}] dark:border-[${color}]`;
+                    break;
+                case 'professional':
+                default:
+                    backgroundStyle = `
+                        background-color: white;
+                        background-image: 
+                            radial-gradient(circle at 100% 100%, ${color}22 0%, transparent 25%),
+                            radial-gradient(circle at 0% 0%, ${color}22 0%, transparent 25%);
+                        background-size: 50px 50px;
+                    `;
+                    contentClass = 'bg-white bg-opacity-90 dark:bg-gray-800 dark:bg-opacity-90 shadow-lg rounded-lg p-6 card-content';
+                    break;
+            }
+            
+            let textColor = '';
+            if (contrastMode === 'high-dark') {
+                textColor = 'color: #000 !important;';
+            } else if (contrastMode === 'high-light') {
+                textColor = 'color: #fff !important;';
+            }
+            
+            return `<div class="card-base w-[500px] h-[300px] ${fontClass}" dir="${direction}" style="${backgroundStyle}">
+                <div class="h-full flex flex-col justify-between p-8">
+                    <div class="${contentClass} ${textClass}" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-1" style="color: ${color}; ${textColor}">${name}</h1>
+                            <h2 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-4" style="${textColor}">${title}</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="contact-info text-sm text-gray-800 dark:text-gray-200" style="${textColor}">
+                                ${contactItems.join('')}
+                            </div>
+                            <div class="social-info text-sm text-gray-800 dark:text-gray-200" style="${textColor}">
+                                ${socialItems.join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+        
+        // Helper function to shift color for gradients
+        function shiftColor(hex, percent) {
+            // Remove # if present
+            hex = hex.replace('#', '');
+            
+            // Convert to RGB
+            let r = parseInt(hex.substring(0, 2), 16);
+            let g = parseInt(hex.substring(2, 4), 16);
+            let b = parseInt(hex.substring(4, 6), 16);
+            
+            // Increase or decrease RGB values
+            r = parseInt(r * (100 + percent) / 100);
+            g = parseInt(g * (100 + percent) / 100);
+            b = parseInt(b * (100 + percent) / 100);
+            
+            // Ensure values are in range
+            r = Math.min(255, Math.max(0, r));
+            g = Math.min(255, Math.max(0, g));
+            b = Math.min(255, Math.max(0, b));
+            
+            // Convert back to hex
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+    </script>
+</body>
+</html>
