@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ البطاقات الاحترافية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #5D5CDE;
+            --text-color: #333333;
+            --bg-color: #FFFFFF;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --input-bg: #F5F5F5;
+            --input-text: #333333;
+            --input-border: #CCCCCC;
+            --input-placeholder: #6B7280;
+        }
+        
+        .dark {
+            --text-color: #E1E1E1;
+            --bg-color: #181818;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            --input-bg: #2A2A2A;
+            --input-text: #E1E1E1;
+            --input-border: #555555;
+            --input-placeholder: #9CA3AF;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
+        }
+        
+        .poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .card-preview {
+            width: 500px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        input, textarea, select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: var(--input-placeholder);
+        }
+        
+        .download-btn {
+            background-color: var(--primary-color);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .card-preview {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 5/3;
+            }
+        }
+        
+        /* Loading and error states */
+        .preview-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: var(--bg-color);
+        }
+        
+        .preview-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: #DC2626;
+            padding: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white" id="pageTitle">منشئ البطاقات الاحترافية</h1>
+        
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Input Form -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">أدخل معلوماتك</h2>
+                
+                <form id="cardForm" class="space-y-4">
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">الاسم الكامل (بالعربية)</label>
+                        <input type="text" id="nameAr" class="w-full px-4 py-2 rounded-md text-base" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">الاسم الكامل (بالإنجليزية)</label>
+                        <input type="text" id="nameEn" class="w-full px-4 py-2 rounded-md text-base poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">المسمى الوظيفي (بالعربية)</label>
+                        <input type="text" id="titleAr" class="w-full px-4 py-2 rounded-md text-base">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">المسمى الوظيفي (بالإنجليزية)</label>
+                        <input type="text" id="titleEn" class="w-full px-4 py-2 rounded-md text-base poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">معلومات الاتصال</label>
+                        <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full px-4 py-2 rounded-md text-base mb-2">
+                        <input type="tel" id="phone" placeholder="رقم الهاتف" class="w-full px-4 py-2 rounded-md text-base">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">وسائل التواصل الاجتماعي</label>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-facebook text-blue-600 dark:text-blue-400"></i>
+                            </span>
+                            <input type="text" id="facebook" placeholder="اسم المستخدم على فيسبوك" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-pink-100 dark:bg-pink-900 p-2 rounded-r-md">
+                                <i class="fab fa-instagram text-pink-600 dark:text-pink-400"></i>
+                            </span>
+                            <input type="text" id="instagram" placeholder="اسم المستخدم على انستغرام" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-twitter text-blue-500 dark:text-blue-300"></i>
+                            </span>
+                            <input type="text" id="twitter" placeholder="اسم المستخدم على تويتر" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-blue-100 dark:bg-blue-900 p-2 rounded-r-md">
+                                <i class="fab fa-linkedin text-blue-700 dark:text-blue-500"></i>
+                            </span>
+                            <input type="text" id="linkedin" placeholder="اسم المستخدم على لينكد إن" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-green-100 dark:bg-green-900 p-2 rounded-r-md">
+                                <i class="fab fa-whatsapp text-green-600 dark:text-green-400"></i>
+                            </span>
+                            <input type="text" id="whatsapp" placeholder="رقم الواتساب (مع رمز الدولة)" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2 mb-2">
+                            <span class="bg-yellow-100 dark:bg-yellow-900 p-2 rounded-r-md">
+                                <i class="fab fa-snapchat text-yellow-500 dark:text-yellow-300"></i>
+                            </span>
+                            <input type="text" id="snapchat" placeholder="اسم المستخدم على سناب شات" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="bg-gray-100 dark:bg-gray-700 p-2 rounded-r-md">
+                                <i class="fab fa-tiktok text-black dark:text-white"></i>
+                            </span>
+                            <input type="text" id="tiktok" placeholder="اسم المستخدم على تيك توك" class="flex-1 px-4 py-2 rounded-l-md text-base">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">تصميم البطاقة</label>
+                        <select id="cardDesign" class="w-full px-4 py-2 rounded-md text-base">
+                            <option value="geometric">هندسي</option>
+                            <option value="gradient">تدرج لوني</option>
+                            <option value="minimal">بسيط</option>
+                            <option value="professional">احترافي</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">سمة الألوان</label>
+                        <div class="grid grid-cols-5 gap-2">
+                            <div class="color-option w-8 h-8 rounded-full bg-blue-600 cursor-pointer border-2 border-transparent" data-color="#2563EB"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-purple-600 cursor-pointer border-2 border-transparent" data-color="#9333EA"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-green-600 cursor-pointer border-2 border-transparent" data-color="#16A34A"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-red-600 cursor-pointer border-2 border-transparent" data-color="#DC2626"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-yellow-500 cursor-pointer border-2 border-transparent" data-color="#EAB308"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-indigo-800 cursor-pointer border-2 border-transparent" data-color="#3730A3"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-rose-600 cursor-pointer border-2 border-transparent" data-color="#E11D48"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-emerald-600 cursor-pointer border-2 border-transparent" data-color="#059669"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-amber-600 cursor-pointer border-2 border-transparent" data-color="#D97706"></div>
+                            <div class="color-option w-8 h-8 rounded-full bg-teal-600 cursor-pointer border-2 border-transparent" data-color="#0D9488"></div>
+                        </div>
+                        <input type="hidden" id="colorTheme" value="#5D5CDE">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-800 dark:text-gray-200">وضوح الألوان للقراءة</label>
+                        <select id="contrastMode" class="w-full px-4 py-2 rounded-md text-base">
+                            <option value="normal">عادي</option>
+                            <option value="high-dark">تباين عالي (نص أسود)</option>
+                            <option value="high-light">تباين عالي (نص أبيض)</option>
+                        </select>
+                    </div>
+                                        
+                    <button type="submit" id="generateBtn" class="w-full bg-primary text-white py-3 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                        إنشاء البطاقات
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Card Preview -->
+            <div class="space-y-8">
+                <div id="previewSection" class="hidden">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">بطاقاتك</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="mb-2 text-gray-800 dark:text-gray-200">البطاقة العربية</h3>
+                            <div id="cardPreviewAr" class="card-preview rounded-lg mx-auto bg-white dark:bg-gray-700">
+                                <canvas id="canvasAr" width="500" height="300" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button id="downloadArBtn" class="bg-primary text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                                    <span>تحميل البطاقة العربية</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="mb-2 text-gray-800 dark:text-gray-200">البطاقة الإنجليزية</h3>
+                            <div id="cardPreviewEn" class="card-preview rounded-lg mx-auto bg-white dark:bg-gray-700">
+                                <canvas id="canvasEn" width="500" height="300" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="mt-4 text-center">
+                                <button id="downloadEnBtn" class="bg-primary text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">
+                                    <span>تحميل البطاقة الإنجليزية</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="instructionsSection">
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">كيفية الاستخدام</h3>
+                        <ol class="list-decimal pr-5 space-y-2 text-gray-800 dark:text-gray-200">
+                            <li>املأ معلوماتك الشخصية والمهنية</li>
+                            <li>اختر التصميم المفضل وسمة الألوان</li>
+                            <li>انقر على "إنشاء البطاقات" لإنشاء بطاقاتك الشخصية</li>
+                            <li>قم بتحميل نسختي البطاقة باللغتين العربية والإنجليزية</li>
+                        </ol>
+                        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-md">
+                            <p class="text-sm text-gray-700 dark:text-gray-300">يتم إنشاء البطاقات كصور عالية الجودة يمكنك مشاركتها بسهولة على صفحة GitHub الخاصة بك أو استخدامها للأغراض المهنية.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set primary color for the site
+        document.addEventListener('DOMContentLoaded', function() {
+            const primaryColor = '#5D5CDE';
+            document.querySelectorAll('.bg-primary').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+        });
+
+        // Dark mode detection and handling
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+        
+        // Form submission and card generation
+        document.getElementById('cardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateCards();
+        });
+        
+        // Color theme selection
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.remove('border-white', 'border-gray-800');
+                    opt.classList.add('border-transparent');
+                });
+                
+                if (document.documentElement.classList.contains('dark')) {
+                    this.classList.remove('border-transparent');
+                    this.classList.add('border-white');
+                } else {
+                    this.classList.remove('border-transparent');
+                    this.classList.add('border-gray-800');
+                }
+                
+                document.getElementById('colorTheme').value = this.getAttribute('data-color');
+            });
+        });
+        
+        // Set default color on page load
+        function setDefaultColorOption() {
+            // Find the color option with the default value or the first one
+            const defaultColorValue = '#5D5CDE';
+            const defaultColor = document.querySelector(`.color-option[data-color="${defaultColorValue}"]`) || 
+                                document.querySelector('.color-option:first-child');
+            
+            if (defaultColor) {
+                if (document.documentElement.classList.contains('dark')) {
+                    defaultColor.classList.remove('border-transparent');
+                    defaultColor.classList.add('border-white');
+                } else {
+                    defaultColor.classList.remove('border-transparent');
+                    defaultColor.classList.add('border-gray-800');
+                }
+                
+                document.getElementById('colorTheme').value = defaultColor.getAttribute('data-color');
+            }
+        }
+        
+        // Call on page load
+        setDefaultColorOption();
+        
+        // Generate and display cards
+        function generateCards() {
+            // Show loading state
+            const generateBtn = document.getElementById('generateBtn');
+            const originalBtnText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<span class="loading"></span> جاري الإنشاء...';
+            generateBtn.disabled = true;
+            
+            // Show preview section
+            document.getElementById('previewSection').classList.remove('hidden');
+            document.getElementById('instructionsSection').classList.add('hidden');
+            
+            // Get form values
+            const nameEn = document.getElementById('nameEn').value;
+            const nameAr = document.getElementById('nameAr').value;
+            const titleEn = document.getElementById('titleEn').value;
+            const titleAr = document.getElementById('titleAr').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const facebook = document.getElementById('facebook').value;
+            const instagram = document.getElementById('instagram').value;
+            const twitter = document.getElementById('twitter').value;
+            const linkedin = document.getElementById('linkedin').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            const snapchat = document.getElementById('snapchat').value;
+            const tiktok = document.getElementById('tiktok').value;
+            const design = document.getElementById('cardDesign').value;
+            const color = document.getElementById('colorTheme').value;
+            const contrastMode = document.getElementById('contrastMode').value;
+            
+            // Get backgrounds for the selected design
+            const arBackground = getCardBackground(design, color, true);
+            const enBackground = getCardBackground(design, color, false);
+            
+            setTimeout(() => {
+                // Generate the Arabic card
+                drawCard(
+                    document.getElementById('canvasAr'), 
+                    nameAr, 
+                    titleAr, 
+                    email, 
+                    phone, 
+                    facebook, 
+                    instagram, 
+                    twitter, 
+                    linkedin, 
+                    whatsapp, 
+                    snapchat, 
+                    tiktok, 
+                    design, 
+                    color, 
+                    contrastMode, 
+                    true,
+                    arBackground
+                );
+                
+                // Generate the English card
+                drawCard(
+                    document.getElementById('canvasEn'), 
+                    nameEn || nameAr, 
+                    titleEn || titleAr, 
+                    email, 
+                    phone, 
+                    facebook, 
+                    instagram, 
+                    twitter, 
+                    linkedin, 
+                    whatsapp, 
+                    snapchat, 
+                    tiktok, 
+                    design, 
+                    color, 
+                    contrastMode, 
+                    false,
+                    enBackground
+                );
+                
+                // Reset button state
+                generateBtn.innerHTML = originalBtnText;
+                generateBtn.disabled = false;
+            }, 500);
+        }
+        
+        // Handle card background based on design
+        function getCardBackground(design, color, isArabic) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const bgColor = isDark ? '#181818' : '#FFFFFF';
+            
+            switch(design) {
+                case 'geometric':
+                    return {
+                        type: 'pattern',
+                        color: bgColor
+                    };
+                case 'gradient':
+                    return {
+                        type: 'gradient',
+                        color1: color,
+                        color2: shiftColor(color, 40)
+                    };
+                case 'minimal':
+                    return {
+                        type: 'minimal',
+                        color: bgColor,
+                        borderColor: color
+                    };
+                case 'professional':
+                default:
+                    return {
+                        type: 'professional',
+                        color: bgColor
+                    };
+            }
+        }
+        
+        // Draw card on canvas
+        function drawCard(canvas, name, title, email, phone, facebook, instagram, twitter, linkedin, whatsapp, snapchat, tiktok, design, color, contrastMode, isArabic, background) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Set direction
+            ctx.direction = isArabic ? 'rtl' : 'ltr';
+            ctx.textAlign = isArabic ? 'right' : 'left';
+            
+            // Background
+            ctx.fillStyle = background.color || '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Add background effects based on design
+            if (background.type === 'gradient') {
+                const gradient = ctx.createLinearGradient(0, 0, width, height);
+                gradient.addColorStop(0, background.color1);
+                gradient.addColorStop(1, background.color2);
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+            } else if (background.type === 'minimal') {
+                // Add border for minimal design
+                const borderWidth = 12;
+                ctx.fillStyle = background.borderColor;
+                if (isArabic) {
+                    ctx.fillRect(0, 0, borderWidth, height);
+                } else {
+                    ctx.fillRect(width - borderWidth, 0, borderWidth, height);
+                }
+            }
+            
+            // Card content container
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const containerColor = isDarkMode ? 'rgba(32, 32, 32, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+            
+            ctx.fillStyle = containerColor;
+            ctx.roundRect = function(x, y, w, h, r) {
+                if (w < 2 * r) r = w / 2;
+                if (h < 2 * r) r = h / 2;
+                this.beginPath();
+                this.moveTo(x+r, y);
+                this.arcTo(x+w, y, x+w, y+h, r);
+                this.arcTo(x+w, y+h, x, y+h, r);
+                this.arcTo(x, y+h, x, y, r);
+                this.arcTo(x, y, x+w, y, r);
+                this.closePath();
+                return this;
+            };
+            
+            // Add card content area
+            const padding = 25;
+            if (background.type !== 'minimal') {
+                ctx.roundRect(padding, padding, width - 2 * padding, height - 2 * padding, 10).fill();
+            }
+            
+            // Set text colors based on contrast mode
+            let nameColor = color;
+            let textColor = isDarkMode ? '#E1E1E1' : '#333333';
+            
+            if (contrastMode === 'high-dark') {
+                nameColor = '#000000';
+                textColor = '#000000';
+            } else if (contrastMode === 'high-light') {
+                nameColor = '#FFFFFF';
+                textColor = '#FFFFFF';
+            }
+            
+            // Draw name
+            ctx.fillStyle = nameColor;
+            ctx.font = 'bold 24px ' + (isArabic ? 'Cairo' : 'Poppins');
+            ctx.fillText(name, isArabic ? width - 40 : 40, 70);
+            
+            // Draw title
+            ctx.fillStyle = textColor;
+            ctx.font = '18px ' + (isArabic ? 'Cairo' : 'Poppins');
+            ctx.fillText(title, isArabic ? width - 40 : 40, 100);
+            
+            // Draw contact info
+            ctx.font = '14px ' + (isArabic ? 'Cairo' : 'Poppins');
+            let contactY = 150;
+            
+            if (email) {
+                ctx.fillText('✉️ ' + email, isArabic ? width - 40 : 40, contactY);
+                contactY += 25;
+            }
+            
+            if (phone) {
+                ctx.fillText('📞 ' + phone, isArabic ? width - 40 : 40, contactY);
+                contactY += 25;
+            }
+            
+            // Draw social media
+            let socialX = isArabic ? 40 : width - 40;
+            let socialY = 150;
+            ctx.textAlign = isArabic ? 'left' : 'right';
+            
+            if (facebook) {
+                ctx.fillText('Facebook: ' + facebook, socialX, socialY);
+                socialY += 25;
+            }
+            
+            if (instagram) {
+                ctx.fillText('Instagram: ' + instagram, socialX, socialY);
+                socialY += 25;
+            }
+            
+            if (twitter) {
+                ctx.fillText('Twitter: ' + twitter, socialX, socialY);
+                socialY += 25;
+            }
+            
+            if (linkedin) {
+                ctx.fillText('LinkedIn: ' + linkedin, socialX, socialY);
+                socialY += 25;
+            }
+            
+            if (whatsapp) {
+                ctx.fillText('WhatsApp: ' + whatsapp, socialX, socialY);
+                socialY += 25;
+            }
+            
+            // Reset text alignment
+            ctx.textAlign = isArabic ? 'right' : 'left';
+        }
+        
+        // Download card as image
+        document.getElementById('downloadEnBtn').addEventListener('click', function() {
+            downloadCard('canvasEn', 'english-card.png');
+        });
+        
+        document.getElementById('downloadArBtn').addEventListener('click', function() {
+            downloadCard('canvasAr', 'arabic-card.png');
+        });
+        
+        function downloadCard(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            
+            if (canvas) {
+                try {
+                    // Create a direct save instruction for the user
+                    const instructions = document.createElement('div');
+                    instructions.className = 'fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50';
+                    instructions.innerHTML = `
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md text-center">
+                            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">لتحميل البطاقة</h3>
+                            <p class="mb-4 text-gray-700 dark:text-gray-300">للحفظ، يرجى النقر بزر الماوس الأيمن على الصورة واختيار "حفظ الصورة باسم"</p>
+                            <div class="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-2 mb-4">
+                                <img src="${canvas.toDataURL('image/png')}" class="max-w-full h-auto" alt="Card Preview">
+                            </div>
+                            <button id="closeInstructions" class="bg-primary text-white py-2 px-4 rounded-md font-medium hover:opacity-90 transition-opacity">إغلاق</button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(instructions);
+                    
+                    // Close instructions
+                    document.getElementById('closeInstructions').addEventListener('click', function() {
+                        document.body.removeChild(instructions);
+                    });
+                } catch (error) {
+                    console.error("Error during download:", error);
+                    alert("حدث خطأ أثناء التحميل. يرجى المحاولة مرة أخرى.");
+                }
+            }
+        }
+        
+        // Helper function to shift color for gradients
+        function shiftColor(hex, percent) {
+            // Remove # if present
+            hex = hex.replace('#', '');
+            
+            // Convert to RGB
+            let r = parseInt(hex.substring(0, 2), 16);
+            let g = parseInt(hex.substring(2, 4), 16);
+            let b = parseInt(hex.substring(4, 6), 16);
+            
+            // Increase or decrease RGB values
+            r = parseInt(r * (100 + percent) / 100);
+            g = parseInt(g * (100 + percent) / 100);
+            b = parseInt(b * (100 + percent) / 100);
+            
+            // Ensure values are in range
+            r = Math.min(255, Math.max(0, r));
+            g = Math.min(255, Math.max(0, g));
+            b = Math.min(255, Math.max(0, b));
+            
+            // Convert back to hex
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+    </script>
+</body>
+</html>
