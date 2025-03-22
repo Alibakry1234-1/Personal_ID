@@ -1,1 +1,1187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>منشئ البطاقات الاحترافية - علي عبداللن بكري</title>
+    
+    <!-- Preload fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&family=Dancing+Script:wght@400;700&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Amiri:wght@400;700&family=Dancing+Script:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2E3192;
+            --secondary-color: #4A90E2;
+            --text-color: #333333;
+            --bg-color: #FFFFFF;
+            --card-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            --input-bg: #F9FAFB;
+            --input-text: #333333;
+            --input-border: #D1D5DB;
+            --input-placeholder: #6B7280;
+        }
+        
+        .dark {
+            --text-color: #E5E7EB;
+            --bg-color: #1F2937;
+            --card-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            --input-bg: #374151;
+            --input-text: #E5E7EB;
+            --input-border: #4B5563;
+            --input-placeholder: #9CA3AF;
+        }
 
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .header .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 2.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1.2fr;
+            }
+        }
+        
+        .poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .card-preview {
+            width: 500px;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border-radius: 0.75rem;
+            max-width: 100%;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-preview:hover {
+            transform: translateY(-5px);
+        }
+        
+        @media (max-width: 500px) {
+            .card-preview {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 5/3.5;
+            }
+        }
+        
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        input, textarea, select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: var(--input-placeholder);
+        }
+        
+        button {
+            cursor: pointer;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        button:hover:not(:disabled) {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .bg-white {
+            background-color: white;
+        }
+        
+        .dark .bg-white {
+            background-color: #2D3748;
+        }
+        
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+        
+        .p-8 {
+            padding: 2rem;
+        }
+        
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-10 {
+            margin-bottom: 2.5rem;
+        }
+        
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+        
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+        
+        .space-y-10 > * + * {
+            margin-top: 2.5rem;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .w-full {
+            width: 100%;
+        }
+        
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .text-4xl {
+            font-size: 2.25rem;
+            line-height: 2.5rem;
+        }
+        
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+        
+        .font-bold {
+            font-weight: 700;
+        }
+        
+        .font-semibold {
+            font-weight: 600;
+        }
+        
+        .text-gray-900 {
+            color: #1F2937;
+        }
+        
+        .dark .text-gray-900 {
+            color: #F9FAFB;
+        }
+        
+        .text-gray-700 {
+            color: #374151;
+        }
+        
+        .dark .text-gray-700 {
+            color: #D1D5DB;
+        }
+        
+        .text-gray-300 {
+            color: #D1D5DB;
+        }
+        
+        .dark .text-gray-300 {
+            color: #9CA3AF;
+        }
+        
+        .text-white {
+            color: #FFFFFF;
+        }
+        
+        .grid-cols-6 {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .color-option {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.3s ease;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .border-white {
+            border-color: white;
+        }
+        
+        .border-gray-700 {
+            border-color: #374151;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .gap-3 {
+            gap: 0.75rem;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+        
+        .social-input-wrapper {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .social-icon {
+            padding: 0.75rem;
+            border-radius: 0.5rem 0 0 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #E5E7EB;
+        }
+        
+        .dark .social-icon {
+            background-color: #4B5563;
+        }
+        
+        .social-input {
+            flex: 1;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        
+        .preview-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: var(--bg-color);
+        }
+        
+        .preview-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: var(--bg-color);
+            color: #DC2626;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 36rem;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .dark .modal-content {
+            background-color: #2D3748;
+            color: #E5E7EB;
+        }
+        
+        .modal-image-container {
+            border: 3px solid #E5E7EB;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dark .modal-image-container {
+            border-color: #4B5563;
+        }
+        
+        .modal-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+        
+        .modal-close {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .copyright {
+            font-size: 0.6rem;
+            text-align: center;
+            color: #6B7280;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        
+        .dark .copyright {
+            color: #9CA3AF;
+        }
+        
+        /* Fallback classes */
+        .text-blue-700 { color: #1D4ED8; }
+        .dark .text-blue-400 { color: #60A5FA; }
+        .text-pink-700 { color: #BE185D; }
+        .dark .text-pink-400 { color: #F472B6; }
+        .text-green-700 { color: #047857; }
+        .dark .text-green-400 { color: #4ADE80; }
+        .text-yellow-700 { color: #A16207; }
+        .dark .text-yellow-400 { color: #FBBF24; }
+        .bg-blue-50 { background-color: #DBEAFE; }
+        .dark .bg-blue-900 { background-color: #1E3A8A; }
+        .bg-green-50 { background-color: #D1FAE5; }
+        .dark .bg-green-900 { background-color: #064E3B; }
+        .bg-yellow-50 { background-color: #FEF3C7; }
+        .dark .bg-yellow-900 { background-color: #78350F; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">🎴 ProCard Maker</div>
+        <h1>منشئ البطاقات الاحترافية</h1>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="grid">
+            <!-- Input Form -->
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-gray-900">أدخل معلوماتك</h2>
+                
+                <form id="cardForm" class="space-y-6">
+                    <div>
+                        <label class="block mb-1 text-gray-700">الاسم الكامل (بالعربية)</label>
+                        <input type="text" id="nameAr" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">الاسم الكامل (بالإنجليزية)</label>
+                        <input type="text" id="nameEn" class="poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">تاريخ الميلاد</label>
+                        <input type="date" id="birthDate" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">المسمى الوظيفي (بالعربية)</label>
+                        <input type="text" id="titleAr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">المسمى الوظيفي (بالإنجليزية)</label>
+                        <input type="text" id="titleEn" class="poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">الجهة/الشركة (بالعربية)</label>
+                        <input type="text" id="entityAr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">الجهة/الشركة (بالإنجليزية)</label>
+                        <input type="text" id="entityEn" class="poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">المدينة (بالعربية)</label>
+                        <input type="text" id="cityAr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">المدينة (بالإنجليزية)</label>
+                        <input type="text" id="cityEn" class="poppins" dir="ltr">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">معلومات الاتصال</label>
+                        <input type="email" id="email" placeholder="البريد الإلكتروني">
+                        <input type="tel" id="phone" placeholder="رقم الجوال">
+                        <input type="tel" id="officePhone" placeholder="رقم المكتب">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">وسائل التواصل الاجتماعي</label>
+                        <div class="social-input-wrapper">
+                            <span class="social-icon">
+                                <i class="fab fa-linkedin text-blue-700 dark:text-blue-400"></i>
+                            </span>
+                            <input type="text" id="linkedin" placeholder="اسم المستخدم على لينكد إن" class="social-input" dir="ltr">
+                        </div>
+                        <div class="social-input-wrapper">
+                            <span class="social-icon">
+                                <i class="fab fa-twitter text-blue-500 dark:text-blue-300"></i>
+                            </span>
+                            <input type="text" id="twitter" placeholder="اسم المستخدم على تويتر" class="social-input" dir="ltr">
+                        </div>
+                        <div class="social-input-wrapper">
+                            <span class="social-icon">
+                                <i class="fab fa-snapchat text-yellow-700 dark:text-yellow-400"></i>
+                            </span>
+                            <input type="text" id="snapchat" placeholder="اسم المستخدم على سناب شات" class="social-input" dir="ltr">
+                        </div>
+                        <div class="social-input-wrapper">
+                            <span class="social-icon">
+                                <i class="fab fa-tiktok"></i>
+                            </span>
+                            <input type="text" id="tiktok" placeholder="اسم المستخدم على تيك توك" class="social-input" dir="ltr">
+                        </div>
+                        <div class="social-input-wrapper">
+                            <span class="social-icon">
+                                <i class="fab fa-instagram text-pink-700 dark:text-pink-400"></i>
+                            </span>
+                            <input type="text" id="instagram" placeholder="اسم المستخدم على انستغرام" class="social-input" dir="ltr">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">تصميم البطاقة</label>
+                        <select id="cardDesign">
+                            <option value="dynamic">ديناميكي (خطوط مائلة)</option>
+                            <option value="gradient">تدرج لوني (دوائر متداخلة)</option>
+                            <option value="geometric">هندسي (مثلثات متداخلة)</option>
+                            <option value="minimal">بسيط (إطار أنيق)</option>
+                            <option value="futuristic">مستقبلي (خطوط نيون)</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">سمة الألوان</label>
+                        <div class="grid-cols-6">
+                            <div class="color-option" style="background-color: #1D4ED8;" data-color="#1D4ED8"></div>
+                            <div class="color-option" style="background-color: #9333EA;" data-color="#9333EA"></div>
+                            <div class="color-option" style="background-color: #047857;" data-color="#047857"></div>
+                            <div class="color-option" style="background-color: #DC2626;" data-color="#DC2626"></div>
+                            <div class="color-option" style="background-color: #A16207;" data-color="#A16207"></div>
+                            <div class="color-option" style="background-color: #3730A3;" data-color="#3730A3"></div>
+                        </div>
+                        <input type="hidden" id="colorTheme" value="#2E3192">
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-1 text-gray-700">وضوح الألوان للقراءة</label>
+                        <select id="contrastMode">
+                            <option value="normal">عادي</option>
+                            <option value="high-dark">تباين عالي (نص أسود)</option>
+                            <option value="high-light">تباين عالي (نص أبيض)</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" id="generateBtn" class="w-full">
+                        إنشاء البطاقات
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Card Preview -->
+            <div class="space-y-10">
+                <div id="previewSection" class="hidden">
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">بطاقاتك</h2>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="mb-2 text-gray-700">البطاقة العربية</h3>
+                            <div id="cardPreviewAr" class="card-preview mx-auto bg-white">
+                                <div class="canvas-container">
+                                    <canvas id="canvasAr" width="500" height="350"></canvas>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <button id="downloadArBtn" class="bg-primary">
+                                    <span>تحميل البطاقة العربية</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="mb-2 text-gray-700">البطاقة الإنجليزية</h3>
+                            <div id="cardPreviewEn" class="card-preview mx-auto bg-white">
+                                <div class="canvas-container">
+                                    <canvas id="canvasEn" width="500" height="350"></canvas>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <button id="downloadEnBtn" class="bg-primary">
+                                    <span>تحميل البطاقة الإنجليزية</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="copyright">
+                        جميع الحقوق محفوظة © 2025 | تم تصميم وبرمجة الموقع بواسطة علي عبداللن بكري
+                    </div>
+                </div>
+                
+                <div id="instructionsSection">
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-semibold mb-6 text-gray-900">كيفية الاستخدام</h3>
+                        <ol style="list-style-type: decimal; padding-right: 1.5rem;">
+                            <li class="mb-2 text-gray-700">املأ معلوماتك الشخصية والمهنية</li>
+                            <li class="mb-2 text-gray-700">اختر التصميم المفضل وسمة الألوان</li>
+                            <li class="mb-2 text-gray-700">انقر على 'إنشاء البطاقات' لإنشاء بطاقاتك الشخصية</li>
+                            <li class="mb-2 text-gray-700">قم بتحميل نسختي البطاقة باللغتين العربية والإنجليزية</li>
+                        </ol>
+                        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                            <p class="text-sm text-gray-700 dark:text-gray-300">يتم إنشاء البطاقات كصور عالية الجودة يمكنك مشاركتها أو استخدامها للأغراض المهنية.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="debug" style="display: none; position: fixed; bottom: 0; left: 0; right: 0; background-color: rgba(0,0,0,0.8); color: white; padding: 10px; z-index: 9999; max-height: 200px; overflow: auto;"></div>
+    
+    <script>
+        function log(message) {
+            const debug = document.getElementById('debug');
+            const line = document.createElement('div');
+            line.textContent = `${new Date().toISOString().substr(11, 8)}: ${message}`;
+            debug.appendChild(line);
+            console.log(message);
+        }
+
+        window.addEventListener('error', function(e) {
+            log(`ERROR: ${e.message} at ${e.filename}:${e.lineno}:${e.colno}`);
+            document.getElementById('debug').style.display = 'block';
+        });
+
+        document.fonts.ready.then(() => {
+            log('Fonts loaded');
+        }).catch(err => {
+            log('Font loading error: ' + err.message);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            log('DOM content loaded');
+            const primaryColor = '#2E3192';
+            document.querySelectorAll('.bg-primary').forEach(el => {
+                el.style.backgroundColor = primaryColor;
+            });
+            setDefaultColorOption();
+        });
+
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+            log('Dark mode detected and applied');
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+                log('Dark mode applied');
+            } else {
+                document.documentElement.classList.remove('dark');
+                log('Light mode applied');
+            }
+        });
+
+        document.getElementById('cardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            generateCards();
+            log('Form submitted');
+        });
+
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(opt => {
+                    opt.classList.remove('border-white', 'border-gray-700');
+                    opt.style.borderColor = 'transparent';
+                });
+                if (document.documentElement.classList.contains('dark')) {
+                    this.classList.add('border-white');
+                    this.style.borderColor = 'white';
+                } else {
+                    this.classList.add('border-gray-700');
+                    this.style.borderColor = '#374151';
+                }
+                document.getElementById('colorTheme').value = this.getAttribute('data-color');
+                log('Color selected: ' + this.getAttribute('data-color'));
+            });
+        });
+
+        function setDefaultColorOption() {
+            const defaultColorValue = '#2E3192';
+            let defaultColor = document.querySelector(`.color-option[data-color="${defaultColorValue}"]`) || document.querySelector('.color-option');
+            if (defaultColor) {
+                if (document.documentElement.classList.contains('dark')) {
+                    defaultColor.style.borderColor = 'white';
+                } else {
+                    defaultColor.style.borderColor = '#374151';
+                }
+                document.getElementById('colorTheme').value = defaultColor.getAttribute('data-color');
+                log('Default color set: ' + defaultColor.getAttribute('data-color'));
+            }
+        }
+
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+            return age;
+        }
+
+        function getFirstName(fullName) {
+            return fullName.split(' ')[0];
+        }
+
+        function generateCards() {
+            const generateBtn = document.getElementById('generateBtn');
+            const originalBtnText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<span class="loading"></span> جاري الإنشاء...';
+            generateBtn.disabled = true;
+
+            document.getElementById('previewSection').classList.remove('hidden');
+            document.getElementById('instructionsSection').classList.add('hidden');
+
+            const nameEn = document.getElementById('nameEn').value;
+            const nameAr = document.getElementById('nameAr').value;
+            const firstNameAr = getFirstName(nameAr);
+            const firstNameEn = getFirstName(nameEn || nameAr);
+            const birthDate = document.getElementById('birthDate').value;
+            const age = calculateAge(birthDate);
+            const titleEn = document.getElementById('titleEn').value;
+            const titleAr = document.getElementById('titleAr').value;
+            const entityEn = document.getElementById('entityEn').value;
+            const entityAr = document.getElementById('entityAr').value;
+            const cityEn = document.getElementById('cityEn').value;
+            const cityAr = document.getElementById('cityAr').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const officePhone = document.getElementById('officePhone').value;
+            const linkedin = document.getElementById('linkedin').value;
+            const twitter = document.getElementById('twitter').value;
+            const snapchat = document.getElementById('snapchat').value;
+            const tiktok = document.getElementById('tiktok').value;
+            const instagram = document.getElementById('instagram').value;
+            const design = document.getElementById('cardDesign').value;
+            const color = document.getElementById('colorTheme').value;
+            const contrastMode = document.getElementById('contrastMode').value;
+
+            log('Form data collected successfully');
+
+            const arBackground = getCardBackground(design, color, true);
+            const enBackground = getCardBackground(design, color, false);
+
+            setTimeout(() => {
+                try {
+                    drawCard(document.getElementById('canvasAr'), nameAr, titleAr, entityAr, cityAr, email, phone, officePhone, linkedin, twitter, snapchat, tiktok, instagram, design, color, contrastMode, true, arBackground, age, birthDate, firstNameAr);
+                    log('Arabic card generated');
+
+                    drawCard(document.getElementById('canvasEn'), nameEn || nameAr, titleEn || titleAr, entityEn || entityAr, cityEn || cityAr, email, phone, officePhone, linkedin, twitter, snapchat, tiktok, instagram, design, color, contrastMode, false, enBackground, age, birthDate, firstNameEn);
+                    log('English card generated');
+                } catch (err) {
+                    log('Error in card drawing: ' + err.message);
+                }
+
+                generateBtn.innerHTML = originalBtnText;
+                generateBtn.disabled = false;
+            }, 500);
+        }
+
+        function getCardBackground(design, color, isArabic) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const bgColor = isDark ? '#1F2937' : '#FFFFFF';
+
+            switch(design) {
+                case 'dynamic':
+                    return {
+                        type: 'dynamic',
+                        color: bgColor,
+                        accentColor: shiftColor(color, 20)
+                    };
+                case 'gradient':
+                    return {
+                        type: 'gradient',
+                        color1: color,
+                        color2: shiftColor(color, 40)
+                    };
+                case 'geometric':
+                    return {
+                        type: 'geometric',
+                        color: bgColor,
+                        accentColor: color
+                    };
+                case 'minimal':
+                    return {
+                        type: 'minimal',
+                        color: bgColor,
+                        borderColor: color
+                    };
+                case 'futuristic':
+                    return {
+                        type: 'futuristic',
+                        color: bgColor,
+                        neonColor: shiftColor(color, -20)
+                    };
+                default:
+                    return {
+                        type: 'dynamic',
+                        color: bgColor
+                    };
+            }
+        }
+
+        function drawSocialIcon(ctx, x, y, type, username, textColor, isArabic) {
+            try {
+                const iconSize = 18;
+                const spacing = 6;
+                const textX = isArabic ? x + iconSize + spacing : x - (ctx.measureText(username).width + iconSize + spacing);
+
+                let iconColor;
+                switch(type) {
+                    case 'linkedin': iconColor = '#0A66C2'; break;
+                    case 'twitter': iconColor = '#1DA1F2'; break;
+                    case 'snapchat': iconColor = '#FFFC00'; break;
+                    case 'tiktok': iconColor = '#000000'; break;
+                    case 'instagram': iconColor = '#E4405F'; break;
+                    default: iconColor = textColor;
+                }
+
+                ctx.fillStyle = iconColor;
+                ctx.beginPath();
+                ctx.arc(x, y - 7, 9, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(type.charAt(0).toUpperCase(), x, y - 7);
+
+                ctx.textAlign = isArabic ? 'left' : 'right';
+                ctx.textBaseline = 'alphabetic';
+
+                ctx.fillStyle = textColor;
+                ctx.font = '15px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                ctx.fillText(username, textX, y);
+
+                return y + 25;
+            } catch (err) {
+                log('Error in drawSocialIcon: ' + err.message);
+                return y + 25;
+            }
+        }
+
+        function drawCard(canvas, name, title, entity, city, email, phone, officePhone, linkedin, twitter, snapchat, tiktok, instagram, design, color, contrastMode, isArabic, background, age, birthDate, firstName) {
+            try {
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    log('Canvas context not available');
+                    return;
+                }
+
+                const width = canvas.width;
+                const height = canvas.height;
+                ctx.clearRect(0, 0, width, height);
+
+                // Background
+                ctx.fillStyle = background.color || '#FFFFFF';
+                ctx.fillRect(0, 0, width, height);
+
+                // Modern background designs
+                if (background.type === 'dynamic') {
+                    ctx.strokeStyle = background.accentColor;
+                    ctx.lineWidth = 5;
+                    ctx.beginPath();
+                    ctx.moveTo(0, height * 0.2);
+                    ctx.lineTo(width, height * 0.8);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(0, height * 0.8);
+                    ctx.lineTo(width, height * 0.2);
+                    ctx.stroke();
+                } else if (background.type === 'gradient') {
+                    const gradient = ctx.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, background.color1);
+                    gradient.addColorStop(1, background.color2);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.globalAlpha = 0.3;
+                    ctx.beginPath();
+                    ctx.arc(width * 0.3, height * 0.3, 80, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(width * 0.7, height * 0.7, 80, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                } else if (background.type === 'geometric') {
+                    ctx.fillStyle = background.accentColor;
+                    ctx.globalAlpha = 0.2;
+                    for (let i = 0; i < 5; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(Math.random() * width, Math.random() * height);
+                        ctx.lineTo(Math.random() * width, Math.random() * height);
+                        ctx.lineTo(Math.random() * width, Math.random() * height);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
+                } else if (background.type === 'minimal') {
+                    ctx.fillStyle = background.borderColor;
+                    ctx.fillRect(isArabic ? 0 : width - 20, 0, 20, height);
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillRect(isArabic ? 20 : width - 40, 0, 20, height);
+                    ctx.globalAlpha = 1;
+                } else if (background.type === 'futuristic') {
+                    ctx.strokeStyle = background.neonColor;
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 10; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(Math.random() * width, Math.random() * height);
+                        ctx.lineTo(Math.random() * width, Math.random() * height);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw transparent decorative first name
+                ctx.fillStyle = shiftColor(color, 20);
+                ctx.globalAlpha = 0.15;
+                ctx.font = isArabic ? '90px Amiri' : '90px "Dancing Script"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.translate(width / 2, height / 2);
+                ctx.rotate(-Math.PI / 4);
+                ctx.fillText(firstName || 'اسم', 0, 0);
+                ctx.resetTransform();
+                ctx.globalAlpha = 1;
+
+                const padding = 30;
+                const containerColor = document.documentElement.classList.contains('dark') ? 'rgba(44, 52, 67, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+
+                if (!ctx.roundRect) {
+                    ctx.roundRect = function(x, y, w, h, r) {
+                        if (w < 2 * r) r = w / 2;
+                        if (h < 2 * r) r = h / 2;
+                        this.beginPath();
+                        this.moveTo(x+r, y);
+                        this.arcTo(x+w, y, x+w, y+h, r);
+                        this.arcTo(x+w, y+h, x, y+h, r);
+                        this.arcTo(x, y+h, x, y, r);
+                        this.arcTo(x, y, x+w, y, r);
+                        this.closePath();
+                        return this;
+                    };
+                }
+
+                function fillRoundRect(ctx, x, y, w, h, r) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.arc(x + w - r, y + r, r, 1.5 * Math.PI, 0);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.arc(x + w - r, y + h - r, r, 0, 0.5 * Math.PI);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.arc(x + r, y + h - r, r, 0.5 * Math.PI, Math.PI);
+                    ctx.lineTo(x, y + r);
+                    ctx.arc(x + r, y + r, r, Math.PI, 1.5 * Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                ctx.fillStyle = containerColor;
+                try {
+                    ctx.roundRect(padding, padding, width - 2 * padding, height - 2 * padding, 12).fill();
+                } catch (err) {
+                    log('Error using roundRect: ' + err.message);
+                    fillRoundRect(ctx, padding, padding, width - 2 * padding, height - 2 * padding, 12);
+                }
+
+                let nameColor = color;
+                let textColor = document.documentElement.classList.contains('dark') ? '#E5E7EB' : '#333333';
+
+                if (contrastMode === 'high-dark') {
+                    nameColor = '#000000';
+                    textColor = '#000000';
+                } else if (contrastMode === 'high-light') {
+                    nameColor = '#FFFFFF';
+                    textColor = '#FFFFFF';
+                }
+
+                const leftMargin = isArabic ? width - 40 : 40;
+                let currentY = 40;
+
+                ctx.direction = isArabic ? 'rtl' : 'ltr';
+                ctx.textAlign = isArabic ? 'right' : 'left';
+
+                // Personal Info Section
+                ctx.fillStyle = nameColor;
+                ctx.font = 'bold 26px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                ctx.fillText(name || 'الاسم الكامل', leftMargin, currentY);
+                currentY += 30;
+
+                if (age && birthDate) {
+                    ctx.fillStyle = textColor;
+                    ctx.font = '16px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                    if (isArabic) {
+                        ctx.fillText(`العمر: ${age} سنة`, leftMargin, currentY);
+                        currentY += 20;
+                        ctx.fillText(`تاريخ الميلاد: ${new Date(birthDate).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}`, leftMargin, currentY);
+                    } else {
+                        ctx.fillText(`Age: ${age} years`, leftMargin, currentY);
+                        currentY += 20;
+                        ctx.fillText(`DOB: ${new Date(birthDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, leftMargin, currentY);
+                    }
+                    currentY += 25;
+                }
+
+                // Separator
+                ctx.strokeStyle = shiftColor(color, 20);
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding + 10, currentY);
+                ctx.lineTo(width - padding - 10, currentY);
+                ctx.stroke();
+                currentY += 15;
+
+                // Professional Info Section
+                if (title) {
+                    ctx.fillStyle = textColor;
+                    ctx.font = '18px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                    ctx.fillText(title, leftMargin, currentY);
+                    currentY += 20;
+                }
+
+                if (entity) {
+                    ctx.font = '16px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                    ctx.fillText(entity, leftMargin, currentY);
+                    currentY += 20;
+                }
+
+                if (city) {
+                    ctx.font = '16px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+                    ctx.fillText('📍 ' + city, leftMargin, currentY);
+                    currentY += 25;
+                }
+
+                // Separator
+                ctx.strokeStyle = shiftColor(color, 20);
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding + 10, currentY);
+                ctx.lineTo(width - padding - 10, currentY);
+                ctx.stroke();
+                currentY += 15;
+
+                // Contact Info Section
+                ctx.font = '14px ' + (isArabic ? 'Cairo, Arial' : 'Poppins, Arial');
+
+                if (email) {
+                    ctx.fillText('✉️ ' + email, leftMargin, currentY);
+                    currentY += 20;
+                }
+
+                if (phone) {
+                    ctx.fillText('📱 ' + phone, leftMargin, currentY);
+                    currentY += 20;
+                }
+
+                if (officePhone) {
+                    ctx.fillText('☎️ ' + officePhone, leftMargin, currentY);
+                    currentY += 20;
+                }
+
+                const socialMedia = [];
+                if (linkedin) socialMedia.push({type: 'linkedin', value: linkedin});
+                if (twitter) socialMedia.push({type: 'twitter', value: twitter});
+                if (snapchat) socialMedia.push({type: 'snapchat', value: snapchat});
+                if (tiktok) socialMedia.push({type: 'tiktok', value: tiktok});
+                if (instagram) socialMedia.push({type: 'instagram', value: instagram});
+
+                if (socialMedia.length > 0) {
+                    let socialX = isArabic ? 40 : width - 40;
+                    let socialY = 150;
+
+                    ctx.save();
+                    ctx.textAlign = isArabic ? 'left' : 'right';
+
+                    socialMedia.forEach(social => {
+                        socialY = drawSocialIcon(ctx, socialX, socialY, social.type, social.value, textColor, isArabic);
+                    });
+
+                    ctx.restore();
+                }
+
+                // Add copyright text on the card
+                ctx.fillStyle = textColor;
+                ctx.font = '8px Cairo';
+                ctx.textAlign = 'center';
+                ctx.fillText('جميع الحقوق محفوظة © 2025 | تم تصميم وبرمجة الموقع بواسطة علي عبداللن بكري', width / 2, height - 10);
+            } catch (err) {
+                log('Error in drawCard: ' + err.message);
+                document.getElementById('debug').style.display = 'block';
+            }
+        }
+
+        document.getElementById('downloadEnBtn').addEventListener('click', function() {
+            downloadCard('canvasEn', 'english-card.png');
+        });
+
+        document.getElementById('downloadArBtn').addEventListener('click', function() {
+            downloadCard('canvasAr', 'arabic-card.png');
+        });
+
+        function downloadCard(canvasId, filename) {
+            try {
+                const canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+                    log('Download initiated successfully');
+                } else {
+                    log('Canvas not found for download: ' + canvasId);
+                    alert('لم يتم العثور على البطاقة للتحميل. يرجى إعادة إنشاء البطاقة.');
+                }
+            } catch (err) {
+                log('Error in downloadCard: ' + err.message);
+                alert('حدث خطأ أثناء التحميل: ' + err.message);
+            }
+        }
+
+        function shiftColor(hex, percent) {
+            try {
+                hex = hex.replace('#', '');
+                let r = parseInt(hex.substring(0, 2), 16);
+                let g = parseInt(hex.substring(2, 4), 16);
+                let b = parseInt(hex.substring(4, 6), 16);
+
+                r = Math.min(255, Math.max(0, parseInt(r * (100 + percent) / 100)));
+                g = Math.min(255, Math.max(0, parseInt(g * (100 + percent) / 100)));
+                b = Math.min(255, Math.max(0, parseInt(b * (100 + percent) / 100)));
+
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            } catch (err) {
+                log('Error in shiftColor: ' + err.message);
+                return hex;
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.altKey && e.key === 'd') {
+                const debug = document.getElementById('debug');
+                debug.style.display = debug.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+
+        log('Script initialization complete');
+    </script>
+</body>
+</html>
